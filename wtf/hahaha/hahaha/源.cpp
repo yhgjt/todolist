@@ -11,27 +11,28 @@
 #include <cstdlib>
 #include<fstream>
 #include <unordered_set>
-// ±£´æÈÎÎñµ½ÎÄ¼ş
+// ä¿å­˜ä»»åŠ¡åˆ°æ–‡ä»¶
 
 
-// Ê±¼ä½âÎöº¯Êı
+// æ—¶é—´è§£æå‡½æ•°
 time_t parseDatetime(const std::string& datetime) {
     std::tm tm = {};
     std::istringstream ss(datetime);
-    ss >> std::get_time(&tm, "%Y-%m-%d %H:%M:%S"); // ¸ñÊ½: YYYY-MM-DD HH:MM:SS
+    ss >> std::get_time(&tm, "%Y-%m-%d %H:%M:%S"); // æ ¼å¼: YYYY-MM-DD HH:MM:SS
     if (ss.fail()) {
         std::cerr << "Invalid datetime format. Please use YYYY-MM-DD HH:MM:SS.\n";
         return -1;
     }
-    return mktime(&tm); // ×ª»»ÎªÊ±¼ä´Á
+    return mktime(&tm); // è½¬æ¢ä¸ºæ—¶é—´æˆ³
 }
 
-// ¸ñÊ½»¯Ê±¼ä´ÁÎªÈËÀà¿É¶Á¸ñÊ½
+// æ ¼å¼åŒ–æ—¶é—´æˆ³ä¸ºäººç±»å¯è¯»æ ¼å¼
 std::string formatDatetime(time_t timestamp) {
     char buffer[26];
     ctime_s(buffer, sizeof(buffer), &timestamp);
     return std::string(buffer);
 }
+//Tagç±»
 class Tag {
 private:
     std::string name;
@@ -47,7 +48,7 @@ public:
         return name;
     }
 };
-// Reminder Àà
+// Reminder ç±»
 class Reminder {
 private:
     time_t remindTime;
@@ -73,8 +74,7 @@ public:
             << " at " << formatDatetime(remindTime) << std::endl;
     }
 };
-
-// Task Àà
+// Task ç±»
 class Task {
 private:
     std::string name;
@@ -157,6 +157,7 @@ public:
         std::cout << "\nReminder: " << formatDatetime(reminder.getRemindTime()) << "\n";
     }
 };
+//ç§ç±»ç±»
 class Category {
 private:
     std::string name;
@@ -200,7 +201,7 @@ public:
         }
     }
 };
-// ¶àÏß³ÌÌáĞÑº¯Êı
+// å¤šçº¿ç¨‹æé†’å‡½æ•°
 void runReminder(const std::vector<Task>& tasks) {
     while (true) {
         time_t now = time(nullptr);
@@ -211,11 +212,11 @@ void runReminder(const std::vector<Task>& tasks) {
             }
         }
         
-        std::this_thread::sleep_for(std::chrono::seconds(30)); // Ã¿ 30 Ãë¼ì²éÒ»´Î
+        std::this_thread::sleep_for(std::chrono::seconds(30)); // æ¯ 30 ç§’æ£€æŸ¥ä¸€æ¬¡
     }
 }
 
-// BatchOperation Àà
+// BatchOperation ç±»
 class BatchOperation {
 public:
     static void addTagsToTasks(std::vector<Task>& tasks, const std::vector<std::string>& taskNames, const std::string& tagName) {
@@ -235,21 +236,21 @@ public:
         std::cout << "Tasks added to category: " << category.getName() << "\n";
     }
     static void deleteTasks(std::vector<Task>& tasks, const std::vector<std::string>& taskNames) {
-        // ´´½¨Ò»¸öÈÎÎñÃû³ÆµÄ¼¯ºÏ£¬ÒÔÌá¸ß²éÕÒĞ§ÂÊ
+        // åˆ›å»ºä¸€ä¸ªä»»åŠ¡åç§°çš„é›†åˆï¼Œä»¥æé«˜æŸ¥æ‰¾æ•ˆç‡
         std::unordered_set<std::string> taskNamesSet(taskNames.begin(), taskNames.end());
 
-        // ÓÃÀ´´æ´¢É¾³ıµÄÈÎÎñÊıÁ¿
+        // ç”¨æ¥å­˜å‚¨åˆ é™¤çš„ä»»åŠ¡æ•°é‡
         int deletedCount = 0;
 
-        // ±éÀúÈÎÎñÁĞ±í²¢É¾³ı·ûºÏÌõ¼şµÄÈÎÎñ
+        // éå†ä»»åŠ¡åˆ—è¡¨å¹¶åˆ é™¤ç¬¦åˆæ¡ä»¶çš„ä»»åŠ¡
         for (auto it = tasks.begin(); it != tasks.end(); ) {
             if (taskNamesSet.find(it->getName()) != taskNamesSet.end()) {
-                // ÕÒµ½Æ¥ÅäµÄÈÎÎñ£¬É¾³ıËü
+                // æ‰¾åˆ°åŒ¹é…çš„ä»»åŠ¡ï¼Œåˆ é™¤å®ƒ
                 it = tasks.erase(it);
                 deletedCount++;
             }
             else {
-                // Èç¹ûÃ»ÓĞÕÒµ½£¬¼ÌĞø±éÀúÏÂÒ»¸öÈÎÎñ
+                // å¦‚æœæ²¡æœ‰æ‰¾åˆ°ï¼Œç»§ç»­éå†ä¸‹ä¸€ä¸ªä»»åŠ¡
                 ++it;
             }
         }
@@ -258,7 +259,7 @@ public:
     }
 };
 
-// TaskManager Àà
+// TaskManager ç±»
 class TaskManager {
 private:
     std::vector<Task> tasks;
@@ -338,7 +339,7 @@ void saveTasksToFile(const std::vector<Task>& tasks, const std::string& filename
     std::cout << "Tasks saved to file successfully.\n";
 }
 
-// ´ÓÎÄ¼ş¼ÓÔØÈÎÎñ
+// ä»æ–‡ä»¶åŠ è½½ä»»åŠ¡
 void loadTasksFromFile(TaskManager& manager, const std::string& filename) {
     std::ifstream file(filename, std::ios::in);
     if (!file.is_open()) {
@@ -375,7 +376,7 @@ void loadTasksFromFile(TaskManager& manager, const std::string& filename) {
     std::cout << "Tasks loaded from file successfully.\n";
 }
 
-// ´´½¨ÈÎÎñµÄº¯Êı
+// åˆ›å»ºä»»åŠ¡çš„å‡½æ•°
 void createTask(TaskManager& manager) {
     system("cls");
     std::string name, description, ddlStr, remindOption;
@@ -406,7 +407,7 @@ void createTask(TaskManager& manager) {
     manager.createTask(name, description, ddl, priority, reminder);
 }
 
-// ²é¿´ÈÎÎñµÄº¯Êı
+// æŸ¥çœ‹ä»»åŠ¡çš„å‡½æ•°
 void listTasks(TaskManager& manager) {
     system("cls");
     std::cout << "Would you like to filter tasks? (y/n): ";
@@ -441,7 +442,7 @@ void listTasks(TaskManager& manager) {
     if (returnChoice != 'y') return;
 }
 
-// ÅúÁ¿²Ù×÷µÄº¯Êı
+// æ‰¹é‡æ“ä½œçš„å‡½æ•°
 void batchOperation(TaskManager& manager) {
     system("cls");
     std::cout << "Batch Operation:\n"
@@ -480,7 +481,7 @@ void batchOperation(TaskManager& manager) {
     }
 }
 
-// ÏÔÊ¾Ö÷²Ëµ¥
+// æ˜¾ç¤ºä¸»èœå•
 int displayMainMenu() {
     system("cls");
     time_t now = time(nullptr);
@@ -496,20 +497,20 @@ int displayMainMenu() {
     return choice;
 }
 
-// ³ÌĞòÍË³öÇ°µÄ±£´æÈÎÎñ
+// ç¨‹åºé€€å‡ºå‰çš„ä¿å­˜ä»»åŠ¡
 void exitProgram(TaskManager& manager, const std::string& filename) {
     system("cls");
     saveTasksToFile(manager.getTasks(), filename);
     std::cout << "Exiting program. Goodbye!\n";
 }
 
-// Ö÷³ÌĞòÂß¼­
+// ä¸»ç¨‹åºé€»è¾‘
 void runTaskManager() {
     TaskManager manager;
     const std::string filename = "tasks.txt";
     loadTasksFromFile(manager, filename);
 
-    // ¿ªÆôÌáĞÑÏß³Ì
+    // å¼€å¯æé†’çº¿ç¨‹
     std::thread reminderThread([&manager]() {
         runReminder(manager.getTasks());
         });
